@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/Nayan-Bhut/Hypixel-Skyblock-Bot#readme",
   "dependencies": {
+    "@zikeji/hypixel": "^1.18.0",
     "discord.js": "^12.5.1",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "node-fetch": "^2.6.1"
   }
 }
