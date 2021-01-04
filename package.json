@@ -2,7 +2,7 @@
   "name": "hypixel-skyblock-bot",
   "version": "1.0.0",
   "description": "A Discord Bot that shows stats and helps with the game called Hypixel Skyblock played on Minecraft Java Edition.",
-  "main": "index.js",
+  "main": "bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
