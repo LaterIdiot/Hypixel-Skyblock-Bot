@@ -1,7 +1,16 @@
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 
-async function uuid(username) {
-	return (await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`).then(response => response.json())).id
+async function findUuid(username) {
+	const uuid = await fetch(
+		`https://api.mojang.com/users/profiles/minecraft/${username}`
+	)
+		.then((response) => response.json())
+		.then((data) => {
+			return data;
+		})
+		.catch((err) => console.error(err));
+
+	return uuid;
 }
 
-module.exports = {uuid}
+module.exports = { findUuid };
