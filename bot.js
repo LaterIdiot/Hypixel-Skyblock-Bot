@@ -9,9 +9,7 @@ const { prefix } = require("./config.json");
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
-const commandFiles = fs
-	.readdirSync("./commands")
-	.filter((file) => file.endsWith(".js"));
+const commandFiles = fs.readdirSync("./commands").filter((file) => file.endsWith(".js"));
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
@@ -30,15 +28,11 @@ client.on("message", (message) => {
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	// seperates args from commands
-	const args = message.content.slice(prefix.length).trim().split(" ");
+	const args = message.content.slice(prefix.length).trim().split(/ +/);
 	const commandName = args.shift().toLowerCase();
 
 	// if there is a command then continue
-	const command =
-		client.commands.get(commandName) ||
-		client.commands.find(
-			(cmd) => cmd.aliases && cmd.aliases.includes(commandName)
-		);
+	const command = client.commands.get(commandName) || client.commands.find((cmd) => cmd.aliases && cmd.aliases.includes(commandName));
 
 	if (!command) return;
 
@@ -72,9 +66,7 @@ client.on("message", (message) => {
 
 		if (now < expirationTime) {
 			const timeLeft = (expirationTime - now) / 1000;
-			return message.reply(
-				`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`
-			);
+			return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
 		}
 	}
 
