@@ -36,7 +36,7 @@ client.on("message", (message) => {
 
 	if (!command) return;
 
-	// sends an error message if arguments are needed and there are non
+	// sends an error message if arguments are needed and there are none
 	if (command.args && !args.length) {
 		let reply = `You didn't provide any arguments, ${message.author}!`;
 

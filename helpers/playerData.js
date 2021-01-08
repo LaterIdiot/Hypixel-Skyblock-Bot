@@ -6,7 +6,7 @@ async function findPlayerData(username) {
 		.then((data) => {
 			return data;
 		})
-		.catch((err) => console.error(err));
+		.catch(() => {return null});
 
 	return playerData;
 }
