@@ -27,7 +27,7 @@ module.exports = {
 		if (!playerData) {
 			const playerDataErrorEmbed = new Discord.MessageEmbed()
 				.setColor("#ff0000")
-				.setTitle("Error")
+				.setTitle("Error:")
 				.setDescription(`Couldn't Find Player's UUID:\nThe username that you entered is invalid.`);
 
 			return embedMsg.edit(playerDataErrorEmbed);
@@ -48,7 +48,7 @@ module.exports = {
 		if (!profiles) {
 			profilesErrorEmbed = new Discord.MessageEmbed()
 				.setColor("#ff0000")
-				.setTitle("Error")
+				.setTitle("Error:")
 				.setDescription(`Couldn't Find ${username}'s Profiles:\n${username} doesn't seem to have any SkyBlock Profiles.`);
 			
 			return embedMsg.edit(profilesErrorEmbed);
@@ -64,37 +64,51 @@ module.exports = {
 
 			const profileNameErrorEmbed = new Discord.MessageEmbed()
 				.setColor("#ff0000")
-				.setTitle("Error")
+				.setTitle("Error:")
 				.setDescription(`Couldn't Find ${username}'s ${profileName} Profile:\n${username} doesn't seem to have a profile named ${profileName}.`);
 
 			if (profileName === "select") {
 				if (profiles.length > 1) {
 					let profilesCuteNameList = [];
 
-					profiles.forEach(element => {
-						profilesCuteNameList.push(element.cute_name);
-					});
+					for (let i = 0; i < profiles.length; i++) {
+						profilesCuteNameList.push(`${i + 1} > ${profiles[i].cute_name}`);
+					};
 
 					const selectProfileEmbed = new Discord.MessageEmbed()
 						.setColor("#5e91ff")
 						.setTitle("Select a Profile")
-						.setDescription(`Select a profile by typing the profile name:\n\n${profilesCuteNameList.join("\n")}`);
+						.setDescription(`Select a profile by typing the profile name or by its corresponding profile number:\`\`\`\n${profilesCuteNameList.join("\n")}\`\`\``);
 
 					const filter = response => {
-						return profilesCuteNameList.some(answer => answer.toLowerCase() === response.content.toLowerCase()) && (response.author.id == message.author.id);
+						return response.author.id === message.author.id;
 					};
 
 					await embedMsg.edit(selectProfileEmbed);
 
-					await message.channel.awaitMessages(filter, { max: 1, time: 20000, errors: ['time']})
+					const userResponse = await message.channel.awaitMessages(filter, { max: 1, time: 20000, errors: ['time']})
 						.then(collected => {
-							profileName = collected.first().content.toLowerCase()
+							if (parseInt(collected.first().content) <= profiles.length && parseInt(collected.first().content) > 0) {
+								profileName = profiles[parseInt(collected.first().content) - 1].cute_name.toLowerCase();
+								collected.first().delete();
+								return null;
+							};
+
+							profileName = collected.first().content.toLowerCase();
+							profileNameErrorEmbed.description = `Couldn't Find ${username}'s ${profileName} Profile:\n${username} doesn't seem to have a profile named ${profileName}.`;
 							collected.first().delete();
+							return null;
+						})
+						.catch(() => {
+							const timeOutEmbed = new Discord.MessageEmbed()
+								.setColor("#ff0000")
+								.setTitle("Timeout Error:")
+								.setDescription("You didn't enter a profile name in time.");
+
+							return embedMsg.edit(timeOutEmbed);
 						});
 
-					// const awaitMessages = await message.channel.awaitMessages(filter, { max: 1, time: 6000 });
-
-					console.log("after a while");
+					if (userResponse !== null) return;
 				};
 			};
 
@@ -177,7 +191,7 @@ module.exports = {
 			return {level, percentToNext, totalXp, skillCap, progress, xpConst};
 		};
 
-		const farmingLevel = findSkillLevel(defaultProfile.experience_skill_farming, default_skill_caps.farming + (defaultProfile.jacob2.perks.farming_level_cap || 0));
+		const farmingLevel = findSkillLevel(defaultProfile.experience_skill_farming || 0, default_skill_caps.farming + (("jacob2" in defaultProfile) ? (("perks" in defaultProfile.jacob2) ? (("farming_level_cap" in defaultProfile.jacob2.perks) ? (defaultProfile.jacob2.perks.farming_level_cap) : 0) : 0): 0));
 		const miningLevel = findSkillLevel(defaultProfile.experience_skill_mining || 0, default_skill_caps.mining);
 		const combatLevel = findSkillLevel(defaultProfile.experience_skill_combat || 0, default_skill_caps.combat);
 		const foragingLevel = findSkillLevel(defaultProfile.experience_skill_foraging || 0, default_skill_caps.foraging);
@@ -196,14 +210,14 @@ module.exports = {
 			.setDescription(`Skills information for ${username} from ${profiles[selectedProfileIndex].cute_name} profile.`)
 			.addFields(
 				{ name: "🔰 Skills", value: `Average: ${numberFormat.format(skillsAverage.toFixed(2))}\nProgress: ${((skillsTotalXp/skillsTotalMaxXp) * 100).toFixed(2)}%\nTotal XP: ${numberFormat.format(skillsTotalXp.toFixed())}\n\u200B` },
-				{ name: "🌾 Farming", value: `Level: ${numberFormat.format(farmingLevel.level)}\n${(!farmingLevel.percentToNext) ? "" : `${farmingLevel.level} => ${farmingLevel.level + 1}: ${farmingLevel.percentToNext.toFixed(2)}%\n`}Progress: ${farmingLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(farmingLevel.xpConst.toFixed())}`, inline: true },
-				{ name: "⛏ Mining", value: `Level: ${numberFormat.format(miningLevel.level)}\n${(!miningLevel.percentToNext) ? "" : `${miningLevel.level} => ${miningLevel.level + 1}: ${miningLevel.percentToNext.toFixed(2)}%\n`}Progress: ${miningLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(miningLevel.xpConst.toFixed())}`, inline: true },
-				{ name: "⚔ Combat", value: `Level: ${numberFormat.format(combatLevel.level)}\n${(!combatLevel.percentToNext) ? "" : `${combatLevel.level} => ${combatLevel.level + 1}: ${combatLevel.percentToNext.toFixed(2)}%\n`}Progress: ${combatLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(combatLevel.xpConst.toFixed())}`, inline: true },
-				{ name: "🪓 Foraging", value: `Level: ${numberFormat.format(foragingLevel.level)}\n${(!foragingLevel.percentToNext) ? "" : `${foragingLevel.level} => ${foragingLevel.level + 1}: ${foragingLevel.percentToNext.toFixed(2)}%\n`}Progress: ${foragingLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(foragingLevel.xpConst.toFixed())}`, inline: true },
-				{ name: "🎣 Fishing", value: `Level: ${numberFormat.format(fishingLevel.level)}\n${(!fishingLevel.percentToNext) ? "" : `${fishingLevel.level} => ${fishingLevel.level + 1}: ${fishingLevel.percentToNext.toFixed(2)}%\n`}Progress: ${fishingLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(fishingLevel.xpConst.toFixed())}`, inline: true },
-				{ name: "📖 Enchanting", value: `Level: ${numberFormat.format(enchantingLevel.level)}\n${(!enchantingLevel.percentToNext) ? "" : `${enchantingLevel.level} => ${enchantingLevel.level + 1}: ${enchantingLevel.percentToNext.toFixed(2)}%\n`}Progress: ${enchantingLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(enchantingLevel.xpConst.toFixed())}`, inline: true },
-				{ name: "🧪 Alchemy", value: `Level: ${numberFormat.format(alchemyLevel.level)}\n${(!alchemyLevel.percentToNext) ? "" : `${alchemyLevel.level} => ${alchemyLevel.level + 1}: ${alchemyLevel.percentToNext.toFixed(2)}%\n`}Progress: ${alchemyLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(alchemyLevel.xpConst.toFixed())}`, inline: true },
-				{ name: "🐶 Taming", value: `Level: ${numberFormat.format(tamingLevel.level)}\n${(!tamingLevel.percentToNext) ? "" : `${tamingLevel.level} => ${tamingLevel.level + 1}: ${tamingLevel.percentToNext.toFixed(2)}%\n`}Progress: ${tamingLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(tamingLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "🌾 Farming", value: `Level: ${numberFormat.format(farmingLevel.level)}\n${(!farmingLevel.percentToNext) ? "" : `${farmingLevel.level} > ${farmingLevel.level + 1}: ${farmingLevel.percentToNext.toFixed(2)}%\n`}Progress: ${farmingLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(farmingLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "⛏ Mining", value: `Level: ${numberFormat.format(miningLevel.level)}\n${(!miningLevel.percentToNext) ? "" : `${miningLevel.level} > ${miningLevel.level + 1}: ${miningLevel.percentToNext.toFixed(2)}%\n`}Progress: ${miningLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(miningLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "⚔ Combat", value: `Level: ${numberFormat.format(combatLevel.level)}\n${(!combatLevel.percentToNext) ? "" : `${combatLevel.level} > ${combatLevel.level + 1}: ${combatLevel.percentToNext.toFixed(2)}%\n`}Progress: ${combatLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(combatLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "🪓 Foraging", value: `Level: ${numberFormat.format(foragingLevel.level)}\n${(!foragingLevel.percentToNext) ? "" : `${foragingLevel.level} > ${foragingLevel.level + 1}: ${foragingLevel.percentToNext.toFixed(2)}%\n`}Progress: ${foragingLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(foragingLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "🎣 Fishing", value: `Level: ${numberFormat.format(fishingLevel.level)}\n${(!fishingLevel.percentToNext) ? "" : `${fishingLevel.level} > ${fishingLevel.level + 1}: ${fishingLevel.percentToNext.toFixed(2)}%\n`}Progress: ${fishingLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(fishingLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "📖 Enchanting", value: `Level: ${numberFormat.format(enchantingLevel.level)}\n${(!enchantingLevel.percentToNext) ? "" : `${enchantingLevel.level} > ${enchantingLevel.level + 1}: ${enchantingLevel.percentToNext.toFixed(2)}%\n`}Progress: ${enchantingLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(enchantingLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "🧪 Alchemy", value: `Level: ${numberFormat.format(alchemyLevel.level)}\n${(!alchemyLevel.percentToNext) ? "" : `${alchemyLevel.level} > ${alchemyLevel.level + 1}: ${alchemyLevel.percentToNext.toFixed(2)}%\n`}Progress: ${alchemyLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(alchemyLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "🐶 Taming", value: `Level: ${numberFormat.format(tamingLevel.level)}\n${(!tamingLevel.percentToNext) ? "" : `${tamingLevel.level} > ${tamingLevel.level + 1}: ${tamingLevel.percentToNext.toFixed(2)}%\n`}Progress: ${tamingLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(tamingLevel.xpConst.toFixed())}`, inline: true },
 				{ name: "\u200B", value: "\u200B", inline: true }
 			);
 
