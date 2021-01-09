@@ -16,7 +16,8 @@ module.exports = {
 		let loadingEmbed = new Discord.MessageEmbed()
 			.setColor("#5e91ff")
 			.setTitle("Loading...")
-			.setDescription(`Loading Player's Player Data`);
+			.setDescription(`Loading Player's Player Data`)
+			.setTimestamp();
 
 		let embedMsg = await message.channel.send(`${message.author}`, loadingEmbed)
 
@@ -28,7 +29,8 @@ module.exports = {
 			const playerDataErrorEmbed = new Discord.MessageEmbed()
 				.setColor("#ff0000")
 				.setTitle("Error:")
-				.setDescription(`Couldn't Find Player's UUID:\nThe username that you entered is invalid.`);
+				.setDescription(`Couldn't Find Player's UUID:\nThe username that you entered is invalid.`)
+				.setTimestamp();
 
 			return embedMsg.edit(playerDataErrorEmbed);
 		};
@@ -49,7 +51,8 @@ module.exports = {
 			profilesErrorEmbed = new Discord.MessageEmbed()
 				.setColor("#ff0000")
 				.setTitle("Error:")
-				.setDescription(`Couldn't Find ${username}'s Profiles:\n${username} doesn't seem to have any SkyBlock Profiles.`);
+				.setDescription(`Couldn't Find ${username}'s Profiles:\n${username} doesn't seem to have any SkyBlock Profiles.`)
+				.setTimestamp();
 			
 			return embedMsg.edit(profilesErrorEmbed);
 		};
@@ -65,7 +68,8 @@ module.exports = {
 			const profileNameErrorEmbed = new Discord.MessageEmbed()
 				.setColor("#ff0000")
 				.setTitle("Error:")
-				.setDescription(`Couldn't Find ${username}'s ${profileName} Profile:\n${username} doesn't seem to have a profile named ${profileName}.`);
+				.setDescription(`Couldn't Find ${username}'s ${profileName} Profile:\n${username} doesn't seem to have a profile named ${profileName}.`)
+				.setTimestamp();
 
 			if (profileName === "select") {
 				if (profiles.length > 1) {
@@ -78,7 +82,8 @@ module.exports = {
 					const selectProfileEmbed = new Discord.MessageEmbed()
 						.setColor("#5e91ff")
 						.setTitle("Select a Profile")
-						.setDescription(`Select a profile by typing the profile name or by its corresponding profile number:\`\`\`\n${profilesCuteNameList.join("\n")}\`\`\``);
+						.setDescription(`Select a profile by typing the profile name or by its corresponding profile number:\`\`\`\n${profilesCuteNameList.join("\n")}\`\`\``)
+						.setTimestamp();
 
 					const filter = response => {
 						return response.author.id === message.author.id;
@@ -103,7 +108,8 @@ module.exports = {
 							const timeOutEmbed = new Discord.MessageEmbed()
 								.setColor("#ff0000")
 								.setTitle("Timeout Error:")
-								.setDescription("You didn't enter a profile name in time.");
+								.setDescription("You didn't enter a profile name in time.")
+								.setTimestamp();
 
 							return embedMsg.edit(timeOutEmbed);
 						});
@@ -219,7 +225,8 @@ module.exports = {
 				{ name: "🧪 Alchemy", value: `Level: ${numberFormat.format(alchemyLevel.level)}\n${(!alchemyLevel.percentToNext) ? "" : `${alchemyLevel.level} > ${alchemyLevel.level + 1}: ${alchemyLevel.percentToNext.toFixed(2)}%\n`}Progress: ${alchemyLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(alchemyLevel.xpConst.toFixed())}`, inline: true },
 				{ name: "🐶 Taming", value: `Level: ${numberFormat.format(tamingLevel.level)}\n${(!tamingLevel.percentToNext) ? "" : `${tamingLevel.level} > ${tamingLevel.level + 1}: ${tamingLevel.percentToNext.toFixed(2)}%\n`}Progress: ${tamingLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(tamingLevel.xpConst.toFixed())}`, inline: true },
 				{ name: "\u200B", value: "\u200B", inline: true }
-			);
+			)
+			.setTimestamp();
 
 		embedMsg.edit(skillEmbed);
 	}
