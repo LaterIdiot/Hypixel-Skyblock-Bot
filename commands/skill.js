@@ -243,12 +243,13 @@ module.exports = {
 			.setTitle(`Dungeoneering - ${username} (${profiles[selectedProfileIndex].cute_name})`)
 			.setDescription(`Dungeoneering information for ${username} from ${profiles[selectedProfileIndex].cute_name} profile.`)
 			.addFields(
-				{ name: "☠ Catacombs", value: `Level: ${numberFormat.format(catacombsLevel.level)}\n${(!catacombsLevel.percentToNext) ? "" : `${catacombsLevel.level} > ${catacombsLevel.level + 1}: ${catacombsLevel.percentToNext.toFixed(2)}%\n`}Progress: ${catacombsLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(catacombsLevel.xpConst.toFixed())}\n` },
+				{ name: "☠ Catacombs", value: `Level: ${numberFormat.format(catacombsLevel.level)}\n${(!catacombsLevel.percentToNext) ? "" : `${catacombsLevel.level} > ${catacombsLevel.level + 1}: ${catacombsLevel.percentToNext.toFixed(2)}%\n`}Progress: ${catacombsLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(catacombsLevel.xpConst.toFixed())}\n\u200B` },
 				{ name: "💉 Healer", value: `Level: ${numberFormat.format(healerLevel.level)}\n${(!healerLevel.percentToNext) ? "" : `${healerLevel.level} > ${healerLevel.level + 1}: ${healerLevel.percentToNext.toFixed(2)}%\n`}Progress: ${healerLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(healerLevel.xpConst.toFixed())}`, inline: true },
 				{ name: "🪄 Mage", value: `Level: ${numberFormat.format(mageLevel.level)}\n${(!mageLevel.percentToNext) ? "" : `${mageLevel.level} > ${mageLevel.level + 1}: ${mageLevel.percentToNext.toFixed(2)}%\n`}Progress: ${mageLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(mageLevel.xpConst.toFixed())}`, inline: true },
 				{ name: "🗡 Berserk", value: `Level: ${numberFormat.format(berserkLevel.level)}\n${(!berserkLevel.percentToNext) ? "" : `${berserkLevel.level} > ${berserkLevel.level + 1}: ${berserkLevel.percentToNext.toFixed(2)}%\n`}Progress: ${berserkLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(berserkLevel.xpConst.toFixed())}`, inline: true },
 				{ name: "🏹 Archer", value: `Level: ${numberFormat.format(archerLevel.level)}\n${(!archerLevel.percentToNext) ? "" : `${archerLevel.level} > ${archerLevel.level + 1}: ${archerLevel.percentToNext.toFixed(2)}%\n`}Progress: ${archerLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(archerLevel.xpConst.toFixed())}`, inline: true },
-				{ name: "🛡 Tank", value: `Level: ${numberFormat.format(tankLevel.level)}\n${(!tankLevel.percentToNext) ? "" : `${tankLevel.level} > ${tankLevel.level + 1}: ${tankLevel.percentToNext.toFixed(2)}%\n`}Progress: ${tankLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(tankLevel.xpConst.toFixed())}`, inline: true }
+				{ name: "🛡 Tank", value: `Level: ${numberFormat.format(tankLevel.level)}\n${(!tankLevel.percentToNext) ? "" : `${tankLevel.level} > ${tankLevel.level + 1}: ${tankLevel.percentToNext.toFixed(2)}%\n`}Progress: ${tankLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(tankLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "\u200B", value: "\u200B", inline: true }
 			)
 			.setTimestamp()
 			.setFooter(`Requested by ${message.author.username}`, message.author.avatarURL());
@@ -262,7 +263,7 @@ module.exports = {
 
 		const userFilter = (reaction, user) => user.id === message.author.id
 
-		const reactionCollector = embedMsg.createReactionCollector(userFilter, { time: 10000 });
+		const reactionCollector = embedMsg.createReactionCollector(userFilter, { time: 20000 });
 
 		reactionCollector.on("collect", (reaction, user) => {
 			if (reaction.emoji.name === "🔰") {
