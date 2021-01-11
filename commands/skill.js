@@ -210,12 +210,12 @@ module.exports = {
 		const carpentryLevel = findSkillLevel(defaultProfile.experience_skill_carpentry || 0, default_skill_caps.carpentry, "carpentry");
 		const runecraftingLevel = findSkillLevel(defaultProfile.experience_skill_runecrafting || 0, default_skill_caps.runecrafting, "runecrafting");
 
-		const catacombsLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.dungeon_types) ? (defaultProfile.dungeons.dungeon_types.catacombs) ? (defaultProfile.dungeons.dungeon_types.catacombs.experience) ? defaultProfile.dungeons.dungeon_types.catacombs.experience || 0 : 0 : 0 : 0 : 0, dungeoneering_xp.length, "dungeoneering");
-		const healerLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.healer) ? (defaultProfile.dungeons.player_classes.healer.experience) ? defaultProfile.dungeons.player_classes.healer.experience || 0 : 0 : 0 : 0 : 0, dungeoneering_xp.length, "dungeoneering");
-		const mageLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.mage) ? (defaultProfile.dungeons.player_classes.mage.experience) ? defaultProfile.dungeons.player_classes.mage.experience || 0 : 0 : 0 : 0 : 0, dungeoneering_xp.length, "dungeoneering");
-		const berserkLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.berserk) ? (defaultProfile.dungeons.player_classes.berserk.experience) ? defaultProfile.dungeons.player_classes.berserk.experience || 0 : 0 : 0 : 0 : 0, dungeoneering_xp.length, "dungeoneering");
-		const archerLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.archer) ? (defaultProfile.dungeons.player_classes.archer.experience) ? defaultProfile.dungeons.player_classes.archer.experience || 0 : 0 : 0 : 0 : 0, dungeoneering_xp.length, "dungeoneering");
-		const tankLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.tank) ? (defaultProfile.dungeons.player_classes.tank.experience) ? defaultProfile.dungeons.player_classes.tank.experience || 0 : 0 : 0 : 0 : 0, dungeoneering_xp.length, "dungeoneering");
+		const catacombsLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.dungeon_types) ? (defaultProfile.dungeons.dungeon_types.catacombs) ? (defaultProfile.dungeons.dungeon_types.catacombs.experience) ? defaultProfile.dungeons.dungeon_types.catacombs.experience || 0 : 0 : 0 : 0 : 0, Object.keys(dungeoneering_xp).length, "dungeoneering");
+		const healerLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.healer) ? (defaultProfile.dungeons.player_classes.healer.experience) ? defaultProfile.dungeons.player_classes.healer.experience || 0 : 0 : 0 : 0 : 0, Object.keys(dungeoneering_xp).length, "dungeoneering");
+		const mageLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.mage) ? (defaultProfile.dungeons.player_classes.mage.experience) ? defaultProfile.dungeons.player_classes.mage.experience || 0 : 0 : 0 : 0 : 0, Object.keys(dungeoneering_xp).length, "dungeoneering");
+		const berserkLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.berserk) ? (defaultProfile.dungeons.player_classes.berserk.experience) ? defaultProfile.dungeons.player_classes.berserk.experience || 0 : 0 : 0 : 0 : 0, Object.keys(dungeoneering_xp).length, "dungeoneering");
+		const archerLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.archer) ? (defaultProfile.dungeons.player_classes.archer.experience) ? defaultProfile.dungeons.player_classes.archer.experience || 0 : 0 : 0 : 0 : 0, Object.keys(dungeoneering_xp).length, "dungeoneering");
+		const tankLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.tank) ? (defaultProfile.dungeons.player_classes.tank.experience) ? defaultProfile.dungeons.player_classes.tank.experience || 0 : 0 : 0 : 0 : 0, Object.keys(dungeoneering_xp).length, "dungeoneering");
 
 		const skillsAverage =  skillsTotalLevel / 8;
 
@@ -257,9 +257,13 @@ module.exports = {
 		await embedMsg.edit(skillEmbed);
 
 		let tabNum = 0
-
-		await embedMsg.react("🔰");
-		await embedMsg.react("☠");
+		
+		try {
+			await embedMsg.react("🔰");
+			await embedMsg.react("☠");
+		} catch (error) {
+			console.error('One of the emojis failed to react.');
+		}
 
 		const userFilter = (reaction, user) => user.id === message.author.id
 
@@ -278,7 +282,13 @@ module.exports = {
 				if (tabNum === 1) return;
 				tabNum++;
 				embedMsg.edit(dungeonEmbed);
+			} else {
+				reaction.users.remove(user);
 			};
+		});
+
+		reactionCollector.on("end", () => {
+			embedMsg.reactions.removeAll();
 		});
 	}
 };
