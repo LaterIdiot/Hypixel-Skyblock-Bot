@@ -262,7 +262,7 @@ module.exports = {
 
 		const userFilter = (reaction, user) => user.id === message.author.id
 
-		const reactionCollector = embedMsg.createReactionCollector(userFilter, { time: 10000 });
+		const reactionCollector = embedMsg.createReactionCollector(userFilter, { time: 20000 });
 
 		reactionCollector.on("collect", (reaction, user) => {
 			if (reaction.emoji.name === "🔰") {
