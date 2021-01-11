@@ -184,6 +184,8 @@ module.exports = {
 					skillsActualTotalXp += xpConst;
 					skillsTotalMaxXp += totalXp;
 					skillsTotalLevel += level - 1;
+				} else {
+
 				};
 
 				if (skillCap !== level - 1) {
@@ -197,7 +199,7 @@ module.exports = {
 			return {level, percentToNext, totalXp, skillCap, progress, xpConst};
 		};
 
-		const farmingLevel = findSkillLevel(defaultProfile.experience_skill_farming || 0, default_skill_caps.farming + (("jacob2" in defaultProfile) ? (("perks" in defaultProfile.jacob2) ? (("farming_level_cap" in defaultProfile.jacob2.perks) ? (defaultProfile.jacob2.perks.farming_level_cap) : 0) : 0): 0));
+		const farmingLevel = findSkillLevel(defaultProfile.experience_skill_farming || 0, default_skill_caps.farming + ((defaultProfile.jacob2) ? (defaultProfile.jacob2.perks) ? defaultProfile.jacob2.perks.farming_level_cap || 0 : 0: 0));
 		const miningLevel = findSkillLevel(defaultProfile.experience_skill_mining || 0, default_skill_caps.mining);
 		const combatLevel = findSkillLevel(defaultProfile.experience_skill_combat || 0, default_skill_caps.combat);
 		const foragingLevel = findSkillLevel(defaultProfile.experience_skill_foraging || 0, default_skill_caps.foraging);
@@ -207,6 +209,13 @@ module.exports = {
 		const tamingLevel = findSkillLevel(defaultProfile.experience_skill_taming || 0, default_skill_caps.taming);
 		const carpentryLevel = findSkillLevel(defaultProfile.experience_skill_carpentry || 0, default_skill_caps.carpentry, "carpentry");
 		const runecraftingLevel = findSkillLevel(defaultProfile.experience_skill_runecrafting || 0, default_skill_caps.runecrafting, "runecrafting");
+
+		const catacombsLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.dungeon_types) ? (defaultProfile.dungeons.dungeon_types.catacombs) ? (defaultProfile.dungeons.dungeon_types.catacombs.experience) ? defaultProfile.dungeons.dungeon_types.catacombs.experience || 0 : 0 : 0 : 0 : 0, dungeoneering_xp.length, "dungeoneering");
+		const healerLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.healer) ? (defaultProfile.dungeons.player_classes.healer.experience) ? defaultProfile.dungeons.player_classes.healer.experience || 0 : 0 : 0 : 0 : 0, dungeoneering_xp.length, "dungeoneering");
+		const mageLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.mage) ? (defaultProfile.dungeons.player_classes.mage.experience) ? defaultProfile.dungeons.player_classes.mage.experience || 0 : 0 : 0 : 0 : 0, dungeoneering_xp.length, "dungeoneering");
+		const berserkLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.berserk) ? (defaultProfile.dungeons.player_classes.berserk.experience) ? defaultProfile.dungeons.player_classes.berserk.experience || 0 : 0 : 0 : 0 : 0, dungeoneering_xp.length, "dungeoneering");
+		const archerLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.archer) ? (defaultProfile.dungeons.player_classes.archer.experience) ? defaultProfile.dungeons.player_classes.archer.experience || 0 : 0 : 0 : 0 : 0, dungeoneering_xp.length, "dungeoneering");
+		const tankLevel = findSkillLevel((defaultProfile.dungeons) ? (defaultProfile.dungeons.player_classes) ? (defaultProfile.dungeons.player_classes.tank) ? (defaultProfile.dungeons.player_classes.tank.experience) ? defaultProfile.dungeons.player_classes.tank.experience || 0 : 0 : 0 : 0 : 0, dungeoneering_xp.length, "dungeoneering");
 
 		const skillsAverage =  skillsTotalLevel / 8;
 
@@ -226,8 +235,49 @@ module.exports = {
 				{ name: "🐶 Taming", value: `Level: ${numberFormat.format(tamingLevel.level)}\n${(!tamingLevel.percentToNext) ? "" : `${tamingLevel.level} > ${tamingLevel.level + 1}: ${tamingLevel.percentToNext.toFixed(2)}%\n`}Progress: ${tamingLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(tamingLevel.xpConst.toFixed())}`, inline: true },
 				{ name: "\u200B", value: "\u200B", inline: true }
 			)
-			.setTimestamp();
+			.setTimestamp()
+			.setFooter(`Requested by ${message.author.username}`, message.author.avatarURL());
 
-		embedMsg.edit(skillEmbed);
+		const dungeonEmbed = new Discord.MessageEmbed()
+			.setColor("#52ba30")
+			.setTitle(`Dungeoneering - ${username} (${profiles[selectedProfileIndex].cute_name})`)
+			.setDescription(`Dungeoneering information for ${username} from ${profiles[selectedProfileIndex].cute_name} profile.`)
+			.addFields(
+				{ name: "☠ Catacombs", value: `Level: ${numberFormat.format(catacombsLevel.level)}\n${(!catacombsLevel.percentToNext) ? "" : `${catacombsLevel.level} > ${catacombsLevel.level + 1}: ${catacombsLevel.percentToNext.toFixed(2)}%\n`}Progress: ${catacombsLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(catacombsLevel.xpConst.toFixed())}\n` },
+				{ name: "💉 Healer", value: `Level: ${numberFormat.format(healerLevel.level)}\n${(!healerLevel.percentToNext) ? "" : `${healerLevel.level} > ${healerLevel.level + 1}: ${healerLevel.percentToNext.toFixed(2)}%\n`}Progress: ${healerLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(healerLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "🪄 Mage", value: `Level: ${numberFormat.format(mageLevel.level)}\n${(!mageLevel.percentToNext) ? "" : `${mageLevel.level} > ${mageLevel.level + 1}: ${mageLevel.percentToNext.toFixed(2)}%\n`}Progress: ${mageLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(mageLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "🗡 Berserk", value: `Level: ${numberFormat.format(berserkLevel.level)}\n${(!berserkLevel.percentToNext) ? "" : `${berserkLevel.level} > ${berserkLevel.level + 1}: ${berserkLevel.percentToNext.toFixed(2)}%\n`}Progress: ${berserkLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(berserkLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "🏹 Archer", value: `Level: ${numberFormat.format(archerLevel.level)}\n${(!archerLevel.percentToNext) ? "" : `${archerLevel.level} > ${archerLevel.level + 1}: ${archerLevel.percentToNext.toFixed(2)}%\n`}Progress: ${archerLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(archerLevel.xpConst.toFixed())}`, inline: true },
+				{ name: "🛡 Tank", value: `Level: ${numberFormat.format(tankLevel.level)}\n${(!tankLevel.percentToNext) ? "" : `${tankLevel.level} > ${tankLevel.level + 1}: ${tankLevel.percentToNext.toFixed(2)}%\n`}Progress: ${tankLevel.progress.toFixed(2)}%\nTotal XP: ${numberFormat.format(tankLevel.xpConst.toFixed())}`, inline: true }
+			)
+			.setTimestamp()
+			.setFooter(`Requested by ${message.author.username}`, message.author.avatarURL());
+
+		await embedMsg.edit(skillEmbed);
+
+		let tabNum = 0
+
+		await embedMsg.react("🔰");
+		await embedMsg.react("☠");
+
+		const userFilter = (reaction, user) => user.id === message.author.id
+
+		const reactionCollector = embedMsg.createReactionCollector(userFilter, { time: 10000 });
+
+		reactionCollector.on("collect", (reaction, user) => {
+			if (reaction.emoji.name === "🔰") {
+				reaction.users.remove(user);
+				reactionCollector.resetTimer();
+				if (tabNum === 0) return;
+				tabNum--;
+				embedMsg.edit(skillEmbed);
+			} else if (reaction.emoji.name === "☠") {
+				reaction.users.remove(user);
+				reactionCollector.resetTimer();
+				if (tabNum === 1) return;
+				tabNum++;
+				embedMsg.edit(dungeonEmbed);
+			};
+		});
 	}
 };
