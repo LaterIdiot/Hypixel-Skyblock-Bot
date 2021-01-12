@@ -1,12 +1,12 @@
 module.exports = {
 	name: "clear",
 	cooldown: 5,
-	description: "Deletes 100 messages in the channel.",
+	description: "Deletes 100 messages in a server channel.",
 	guildOnly: true,
 	args: false,
 	usage: "[amount]",
 	async execute(message, args) {
-		if (args.length === 0) return message.channel.bulkDelete(100);
+		if (args.length === 0) return message.channel.bulkDelete(100, true);
 
 		const amount = parseInt(args[0]);
 
