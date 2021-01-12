@@ -265,7 +265,14 @@ module.exports = {
 			console.error('One of the emojis failed to react.');
 		}
 
-		const userFilter = (reaction, user) => user.id === message.author.id
+		const userFilter = (reaction, user) => {
+			if (user.id === message.author.id) {
+				return true;
+			} else {
+				reaction.users.remove(user);
+				return false;
+			};
+		};
 
 		const reactionCollector = embedMsg.createReactionCollector(userFilter, { time: 20000 });
 
